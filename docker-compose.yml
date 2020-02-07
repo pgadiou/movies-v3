@@ -1,0 +1,18 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: movies_v_3
+    environment:
+      - APPLICATION_PORT=3310
+      - DATABASE_URL=postgres://forest:secret@host.docker.internal:5451/custom-db-movies
+      - DATABASE_SCHEMA=public
+      - DATABASE_SSL=false
+      - FOREST_AUTH_SECRET=498a039f0249c5c1439c84a1a4444a37133340fd59cda1a9f94921c1227e7b3be7ff65cfdb9bf5f47f2a26f085862991
+      - FOREST_ENV_SECRET=123297e62f12717c28c82e93ac7433c2466d6c9e6d92ec0f834f68450160296c
+    ports:
+      - "3310:3310"
+    volumes:
+      - ./:/usr/src/app
