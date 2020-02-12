@@ -1,6 +1,5 @@
 const express = require('express');
-const { PermissionMiddlewareCreator, RecordsGetter
-} = require('forest-express-sequelize');
+const { PermissionMiddlewareCreator, RecordsGetter } = require('forest-express-sequelize');
 const { movies, roles } = require('../models');
 const sequelize = require('sequelize');
 const Op = sequelize.Op;
@@ -9,21 +8,18 @@ const router = express.Router();
 const permissionMiddlewareCreator = new PermissionMiddlewareCreator('movies');
 
 function setSearch(request) {
-  let search = null;
-  return request.query.search ? search = request.query.search : search;
-};
+  return request.query.search ? request.query.search : null;
+}
 
 function setLimit(request) {
-  let limit = 15;
-  return request.query.page ? limit = parseInt(request.query.page.size) : limit;
-};
+  return request.query.page ? parseInt(request.query.page.size) : 15;
+}
 
 function setOffset(request, limit) {
-  let offset = 0;
-  return request.query.page ? offset = (parseInt(request.query.page.number) - 1) * limit : offset;
-};
+  return request.query.page ? (parseInt(request.query.page.number) - 1) * limit : 0;
+}
 
-function extendSearchToRoles(search, limit, offset) {
+function applySearchToRoles(search, limit, offset) {
   return movies
     .findAll({
       include: [{
@@ -49,10 +45,19 @@ function extendSearchToRoles(search, limit, offset) {
           ],
         },
       }],
-      offset: offset,
-      limit : limit,
-    })
-};
+      offset,
+      limit,
+    });
+}
+
+async function extendSearchToRole(request, search, response) {
+  const limit = setLimit(request);
+  const offset = setOffset(request, limit);
+  const recordsGetter = new RecordsGetter(movies);
+  const moviesFound = await applySearchToRoles(search, limit, offset);
+  const moviesSerialized = await recordsGetter.serialize(moviesFound);
+  response.send(moviesSerialized);
+}
 
 // This file contains the logic of every route in Forest Admin for the collection movies:
 // - Native routes are already generated but can be extended/overriden - Learn how to extend a route here: https://docs.forestadmin.com/documentation/v/v5/reference-guide/routes/extend-a-route
@@ -79,97 +84,24 @@ router.delete('/movies/:recordId', permissionMiddlewareCreator.delete(), (reques
 // Get a list of Movies
 router.get('/movies', permissionMiddlewareCreator.list(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v5/reference-guide/routes/default-routes#get-a-list-of-records
-  // set search terms when exist
-  const search = setSearch(request);
-
-  if (search) {
-    const limit = setLimit(request);
-    const offset = setOffset(request, limit);
-    const recordsGetter = new RecordsGetter(movies);
-    movies
-    .findAll({
-      include: [{
-        model: roles,
-        as: 'roles',
-        attributes: ['name','leadRole'],
-        // required: false,
-        where: {
-          [Op.or]: [
-            {
-              [Op.and]: [
-                {
-                  leadRole: true,
-                },
-                {
-                  name: { [Op.like]: `%${search}%` },
-                },
-              ],
-            },
-            {
-              '$movies.title$': { [Op.like]: `%${search}%` },
-            },
-          ],
-        },
-      }],
-      offset: offset,
-      limit : limit,
-    })
-    .then(movies => recordsGetter.serialize(movies))
-    .then(function(recordsSerialized) {
-      response.send(recordsSerialized)
-    })
-    .catch(next);
-  } else {
-    next();
-  }
-  // }).then(movies => console.log(movies))
-
+  // const search = setSearch(request);
+  // if (search) {
+  //   extendSearchToRole(request, search, response);
+  // } else {
+  //   next();
+  // }
+  next();
 });
 
 // Get a number of Movies
 router.get('/movies/count', permissionMiddlewareCreator.list(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v5/reference-guide/routes/default-routes#get-a-number-of-records
-  const search = setSearch(request);
-
-  if (search) {
-    const limit = setLimit(request);
-    const offset = setOffset(request, limit);
-    const recordsGetter = new RecordsGetter(movies);
-    movies
-      .findAll({
-        include: [{
-          model: roles,
-          as: 'roles',
-          attributes: ['name','leadRole'],
-          // required: false,
-          where: {
-            [Op.or]: [
-              {
-                [Op.and]: [
-                  {
-                    leadRole: true,
-                  },
-                  {
-                    name: { [Op.like]: `%${search}%` },
-                  },
-                ],
-              },
-              {
-                '$movies.title$': { [Op.like]: `%${search}%` },
-              },
-            ],
-          },
-        }],
-        offset: offset,
-        limit : limit,
-      })
-      .then(movies => recordsGetter.serialize(movies))
-      .then(function(recordsSerialized) {
-        response.send(recordsSerialized)
-      })
-      .catch(next);
-  }
-  // }).then(movies => console.log(movies))
+  // const search = setSearch(request);
+  // if (search) {
+  //   extendSearchToRole(request, search, response);
+  // } else {
+  //   next();
+  // }
   next();
 });
 

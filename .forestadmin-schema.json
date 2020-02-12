@@ -250,6 +250,20 @@
       "inverseOf": null,
       "validations": []
     }, {
+      "field": "lead Actor",
+      "type": "Number",
+      "defaultValue": null,
+      "enums": null,
+      "integration": null,
+      "isFilterable": false,
+      "isReadOnly": true,
+      "isRequired": false,
+      "isSortable": false,
+      "isVirtual": true,
+      "reference": null,
+      "inverseOf": null,
+      "validations": []
+    }, {
       "field": "movieCharacteristics",
       "type": ["Number"],
       "defaultValue": null,
@@ -320,20 +334,6 @@
       "reference": "roles.movieIdKey",
       "inverseOf": null,
       "relationship": "HasMany",
-      "validations": []
-    }, {
-      "field": "smartfield",
-      "type": "Number",
-      "defaultValue": null,
-      "enums": null,
-      "integration": null,
-      "isFilterable": false,
-      "isReadOnly": true,
-      "isRequired": false,
-      "isSortable": false,
-      "isVirtual": true,
-      "reference": null,
-      "inverseOf": null,
       "validations": []
     }, {
       "field": "title",

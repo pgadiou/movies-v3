@@ -15,7 +15,7 @@ collection('movies', {
     name: 'send info',
   }],
   fields: [{
-    field: 'smartfield',
+    field: 'lead Actor',
     type: 'Number',
     isSearchable: true,
     get(movie) {
@@ -23,6 +23,8 @@ collection('movies', {
       return 12;
     },
     // search(query, search) {
+    //   console.log("searching");
+    //   return query;
     //   query.include.push({
     //     model: models.roles,
     //     as: 'roles',
@@ -92,6 +94,7 @@ collection('movies', {
     // },
   }],
   segments: [],
+  searchFields: ['id'],
 });
 // query => ce qu'on passe directement sequelize query
 

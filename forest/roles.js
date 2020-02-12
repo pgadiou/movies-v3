@@ -14,14 +14,13 @@ collection('roles', {
     field: 'actor name',
     type: 'String',
     get: (role) => {
-      console.log(role)
       return actors
         .findOne({ where: { id: role.actorIdKey } })
         .then((actor) => `${actor.firstName} ${actor.lastName}`);
     },
-    search (query, search) {
-
-      console.log(query)
+    search(query, search) {
+      // let searchSplit = search.split(' ');
+      // console.log(query)
       // console.log(query.where[Op.and][0][Op.or][4].attribute, search);
       // const searchCondition = { smartfield: { [Op.like]: `%${search}%` } };
       // // query.where[Op.and][0][Op.or].push(searchCondition);
