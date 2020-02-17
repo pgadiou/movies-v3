@@ -7,15 +7,15 @@ const Op = sequelize.Op;
 const router = express.Router();
 const permissionMiddlewareCreator = new PermissionMiddlewareCreator('movies');
 
-function setSearch(request) {
+function getSearch(request) {
   return request.query.search ? request.query.search : null;
 }
 
-function setLimit(request) {
+function getLimit(request) {
   return request.query.page ? parseInt(request.query.page.size) : 15;
 }
 
-function setOffset(request, limit) {
+function getOffset(request, limit) {
   return request.query.page ? (parseInt(request.query.page.number) - 1) * limit : 0;
 }
 
@@ -51,12 +51,93 @@ function applySearchToRoles(search, limit, offset) {
 }
 
 async function extendSearchToRole(request, search, response) {
-  const limit = setLimit(request);
-  const offset = setOffset(request, limit);
+  const limit = getLimit(request);
+  const offset = getOffset(request, limit);
   const recordsGetter = new RecordsGetter(movies);
   const moviesFound = await applySearchToRoles(search, limit, offset);
   const moviesSerialized = await recordsGetter.serialize(moviesFound);
-  response.send(moviesSerialized);
+  try {
+    response.send(moviesSerialized);
+  } catch (error) {
+    console.log('err ==>', error);
+  }
+}
+
+
+function applySearchToReleaseYear(search, limit, offset) {
+  if (isNaN(parseInt(search))) {
+    return movies
+      .findAll({
+        where: {
+          [Op.or]: [
+            { title: { [Op.like]: `%${search}%` } },
+          ],
+        },
+        offset,
+        limit,
+      });
+  }
+  return movies
+    .findAll({
+      where: {
+        [Op.or]: [
+          { releaseYear: { [Op.eq]: `${search}` } },
+          { title: { [Op.like]: `%${search}%` } },
+          { id: { [Op.eq]: `${search}` } },
+        ],
+      },
+      offset,
+      limit,
+    });
+}
+
+function applySearchToReleaseYearCount(search, limit, offset) {
+  if (isNaN(parseInt(search))) {
+    return movies
+      .count({
+        where: {
+          [Op.or]: [
+            { title: { [Op.like]: `%${search}%` } },
+          ],
+        },
+        offset,
+        limit,
+      });
+  }
+  return movies
+    .count({
+      where: {
+        [Op.or]: [
+          { releaseYear: { [Op.eq]: `${search}` } },
+          { title: { [Op.like]: `%${search}%` } },
+          { id: { [Op.eq]: `${search}` } },
+        ],
+      },
+      offset,
+      limit,
+    });
+}
+
+async function extendSearchToReleaseYear(request, search, response, get) {
+  const limit = getLimit(request);
+  const offset = getOffset(request, limit);
+  if (get) {
+    const recordsGetter = new RecordsGetter(movies);
+    const moviesFound = await applySearchToReleaseYear(search, limit, offset);
+    const moviesSerialized = await recordsGetter.serialize(moviesFound);
+    try {
+      response.send(moviesSerialized);
+    } catch (error) {
+      console.log('err ==>', error);
+    }
+  } else {
+    const count = await applySearchToReleaseYearCount(search, limit, offset);
+    try {
+      response.send({ count });
+    } catch (error) {
+      console.log('err ==>', error);
+    }
+  }
 }
 
 // This file contains the logic of every route in Forest Admin for the collection movies:
@@ -83,10 +164,12 @@ router.delete('/movies/:recordId', permissionMiddlewareCreator.delete(), (reques
 
 // Get a list of Movies
 router.get('/movies', permissionMiddlewareCreator.list(), (request, response, next) => {
+  console.log(request.query)
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v5/reference-guide/routes/default-routes#get-a-list-of-records
-  // const search = setSearch(request);
+  // const search = getSearch(request);
   // if (search) {
-  //   extendSearchToRole(request, search, response);
+  //   extendSearchToReleaseYear(request, search, response, true);
+  //   // extendSearchToRole(request, search, response);
   // } else {
   //   next();
   // }
@@ -96,9 +179,10 @@ router.get('/movies', permissionMiddlewareCreator.list(), (request, response, ne
 // Get a number of Movies
 router.get('/movies/count', permissionMiddlewareCreator.list(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v5/reference-guide/routes/default-routes#get-a-number-of-records
-  // const search = setSearch(request);
+  // const search = getSearch(request);
   // if (search) {
-  //   extendSearchToRole(request, search, response);
+  //   extendSearchToReleaseYear(request, search, response, false);
+  //   // extendSearchToRole(request, search, response);
   // } else {
   //   next();
   // }

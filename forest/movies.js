@@ -14,108 +14,111 @@ collection('movies', {
   actions: [{
     name: 'send info',
   }],
-  fields: [{
-    field: 'lead Actor',
-    type: 'Number',
-    isSearchable: true,
-    get(movie) {
-      // eslint-disable-next-line max-len
-      return 12;
+  fields: [
+    {
+      field: 'Director name',
+      type: 'String',
+      get(movie) {
+        return movie.filmmaker ? movie.filmmaker.lastName : 'n.a.';
+      },
+      search(query, search) {
+        console.log(query.where[Op.and][0][Op.or]);
+        const searchCondition = { '$filmmaker.last_name$': { [Op.like]: `%${search}%` } };
+        query.where[Op.and][0][Op.or].push(searchCondition);
+        console.log(query.where[Op.and][0][Op.or])
+        return query;
+        return query.where[Op.and][0][Op.or].push(searchCondition);
+      },
     },
-    // search(query, search) {
-    //   console.log("searching");
-    //   return query;
-    //   query.include.push({
-    //     model: models.roles,
-    //     as: 'roles',
-    //     attributes: ['name', 'leadRole'],
-    //     // required: false,
-
-    //     // RESTRICT JOIN TO SPECIFIC RECORDS UPON CONDITION
-    //     // where: {
-    //     //   [Op.and]: [
-    //     //     {
-    //     //       lead_role: { [Op.eq]: true },
-    //     //     },
-    //     //     {
-    //     //       name: { [Op.like]: `%${search}%` },
-    //     //     },
-    //     //   ],
-    //     // },
-    //   });
-      
-    //   // TRY USING SEQUELIZE LITERAL
-    //   // const searchCondition = models.sequelize.literal(`roles.name ILIKE '%${search}%'`);
-
-    //   // TRY BUILDING QUERY USING THE DOC SYNTAX
-    //   const searchCondition = {
-    //     [Op.and]: [
-    //       // models.sequelize.literal(`roles.name ILIKE '%${search}%'`),
-    //       { '$roles.lead_role$': { [Op.eq]: true } },
-    //       { '$roles.name$': { [Op.like]: `%${search}%` } },
-    //     ],
-    //   };
-
-    //   // TRY BUILDING QUERY WITH DIFFERENT SYNTAX
-    //   // {
-    //   //   // where: {
-    //   //   //   $and: [
-    //   //   //     {
-    //   //   //       '$roles.leadRole$': {
-    //   //   //         $eq: true,
-    //   //   //       },
-    //   //   //     },
-    //   //   //     {
-    //   //   //       '$roles.name$': {
-    //   //   //         $like: `%${search}%`,
-    //   //   //       },
-    //   //   //     },
-    //   //   //   ],
-    //   //   // },
-
-
-    //   // query.where.push(searchCondition);
-      
-    //   console.log(query.where);
-    //   console.log(query.where[Op.and][0][Op.or]);
-
-    //   return query;
-
-    //   // TRYING TO RETURN DIRECTLY A PROMISE
-    //   // return query = models.movies.findAll({
-    //   //   where: {
-    //   //     '$roles.name$': {[Op.like]: `%${search}%` },
-    //   //   },
-    //   //   include: [{
-    //   //     model: models.roles,
-    //   //     as: 'roles',
-    //   //   }],
-    //   // });
+    // {
+    //   field: 'Has roles?',
+    //   type: 'Boolean',
+    //   get(movie) {
+    //     return movie
+    //       .getRoles()
+    //       .then(roles => (roles.length > 0));
+    //   },
     // },
-  }],
-  segments: [],
-  searchFields: ['id'],
-});
-// query => ce qu'on passe directement sequelize query
+    {
+      field: 'lead Actor',
+      type: 'Number',
+      // isSearchable: true,
+      get(movie) {
+      // eslint-disable-next-line max-len
+        return 12;
+      },
+      search(query, search) {
+        console.log("searching");
+        console.log(query.where[Op.and][0][Op.or])
+        return query;
+        query.include.push({
+          model: models.roles,
+          as: 'roles',
+          attributes: ['name', 'leadRole'],
+          // required: false,
 
-// {
-//   where: {
-//     [Symbol(and)]: [{ [Symbol(or)]: [
-//       {id : 12},
-//       Where {
-//         attribute: Fn { fn: 'lower', args: [Col { col: 'movies.title' }] },
-//         comparator: ' LIKE ',
-//         logic: Fn { fn: 'lower', args: ['%12%'] }
-//       },
-//       Where {
-//         attribute: Fn { fn: 'lower', args: [Col { col: 'movies.picture' }] },
-//         comparator: ' LIKE ',
-//         logic: Fn { fn: 'lower', args: ['%12%'] }
-//       }
-//     ]}]
-//   },
-//   include: [],
-//   order: [ [ 'id', 'DESC' ] ],
-//   offset: 0,
-//   limit: 15
-// }
+          // RESTRICT JOIN TO SPECIFIC RECORDS UPON CONDITION
+          // where: {
+          //   [Op.and]: [
+          //     {
+          //       lead_role: { [Op.eq]: true },
+          //     },
+          //     {
+          //       name: { [Op.like]: `%${search}%` },
+          //     },
+          //   ],
+          // },
+        });
+      
+        // TRY USING SEQUELIZE LITERAL
+        // const searchCondition = models.sequelize.literal(`roles.name ILIKE '%${search}%'`);
+
+        // TRY BUILDING QUERY USING THE DOC SYNTAX
+        const searchCondition = {
+          [Op.and]: [
+            // models.sequelize.literal(`roles.name ILIKE '%${search}%'`),
+            { '$roles.lead_role$': { [Op.eq]: true } },
+            { '$roles.name$': { [Op.like]: `%${search}%` } },
+          ],
+        };
+
+        // TRY BUILDING QUERY WITH DIFFERENT SYNTAX
+        // {
+        //   // where: {
+        //   //   $and: [
+        //   //     {
+        //   //       '$roles.leadRole$': {
+        //   //         $eq: true,
+        //   //       },
+        //   //     },
+        //   //     {
+        //   //       '$roles.name$': {
+        //   //         $like: `%${search}%`,
+        //   //       },
+        //   //     },
+        //   //   ],
+        //   // },
+
+
+        // query.where.push(searchCondition);
+        console.log(query.where);
+        console.log(query.where[Op.and][0][Op.or]);
+
+        return query;
+
+      // TRYING TO RETURN DIRECTLY A PROMISE
+      // return query = models.movies.findAll({
+      //   where: {
+      //     '$roles.name$': {[Op.like]: `%${search}%` },
+      //   },
+      //   include: [{
+      //     model: models.roles,
+      //     as: 'roles',
+      //   }],
+      // });
+    },
+    },
+  ],
+  segments: [],
+  // searchFields: ['id'],
+});

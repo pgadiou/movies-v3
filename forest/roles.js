@@ -10,13 +10,21 @@ const Op = sequelize.Op;
 // - Smart segments: https://docs.forestadmin.com/documentation/reference-guide/segments/smart-segments
 collection('roles', {
   actions: [],
-  fields: [{
+  fields: [
+    {
+      field: 'Has movie?',
+      type: 'Boolean',
+      get(role) {
+        console.log(role)
+        return role.movie ? true : false ;
+      },
+    },{
     field: 'actor name',
     type: 'String',
     get: (role) => {
       return actors
         .findOne({ where: { id: role.actorIdKey } })
-        .then((actor) => `${actor.firstName} ${actor.lastName}`);
+        .then((actor) => actor ? `${actor.firstName} ${actor.lastName}` : null);
     },
     search(query, search) {
       // let searchSplit = search.split(' ');

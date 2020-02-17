@@ -4,53 +4,41 @@ module.exports = (sequelize, DataTypes) => {
   const { Sequelize } = sequelize;
   // This section contains the fields of your model, mapped to your table's columns.
   // Learn more here: https://docs.forestadmin.com/documentation/v/v5/reference-guide/models/enrich-your-models#declaring-a-new-field-in-a-model
-  const Movies = sequelize.define('movies', {
-    title: {
+  const Directors = sequelize.define('directors', {
+    firstName: {
       type: DataTypes.STRING,
     },
-    releaseYear: {
-      type: DataTypes.INTEGER,
+    lastName: {
+      type: DataTypes.STRING,
     },
-    rating: {
-      type: DataTypes.INTEGER,
+    gender: {
+      type: DataTypes.STRING,
+      // defaultValue: Sequelize.literal('male'),
     },
     picture: {
       type: DataTypes.STRING,
     },
-    academyAward: {
-      type: DataTypes.BOOLEAN,
+    birth_date: {
+      type: DataTypes.DATE,
     },
   }, {
-    tableName: 'movies',
+    tableName: 'directors',
     underscored: true,
     timestamps: false,
     schema: process.env.DATABASE_SCHEMA,
   });
 
   // This section contains the relationships for this model. See: https://docs.forestadmin.com/documentation/v/v5/reference-guide/relationships#adding-relationships.
-  Movies.associate = (models) => {
-    Movies.hasMany(models.movie_characteristics, {
-      foreignKey: {
-        name: 'movieIdKey',
-        field: 'movie_id',
-      },
-      as: 'movieCharacteristics',
-    });
-    Movies.hasMany(models.roles, {
-      foreignKey: {
-        name: 'movieIdKey',
-        field: 'movie_id',
-      },
-      as: 'roles',
-    });
-    Movies.belongsTo(models.directors, {
+  Directors.associate = (models) => {
+    Directors.hasMany(models.movies, {
       foreignKey: {
         name: 'directorIdKey',
         field: 'director_id',
+        // allowNull: false,
       },
-      as: 'filmmaker',
+      as: 'movies',
     });
   };
 
-  return Movies;
+  return Directors;
 };
