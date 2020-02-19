@@ -11,6 +11,11 @@ module.exports = (sequelize, DataTypes) => {
     leadRole: {
       type: DataTypes.BOOLEAN,
     },
+    actorId: {
+      field: 'actor_id',
+      type: DataTypes.NUMBER,
+      allowNull: false,
+    },
   }, {
     tableName: 'roles',
     underscored: true,
@@ -24,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'actorIdKey',
         field: 'actor_id',
-        allowNull: false,
       },
       as: 'actor',
     });

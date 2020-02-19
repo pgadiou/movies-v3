@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'actorIdKey',
         field: 'actor_id',
-        // allowNull: false,
+        // allowNull: true,
       },
       as: 'roles',
     });
