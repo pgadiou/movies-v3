@@ -11,11 +11,11 @@ module.exports = (sequelize, DataTypes) => {
     leadRole: {
       type: DataTypes.BOOLEAN,
     },
-    actorId: {
-      field: 'actor_id',
-      type: DataTypes.NUMBER,
-      allowNull: false,
-    },
+    // actorId: {
+    //   field: 'actor_id',
+    //   type: DataTypes.NUMBER,
+    //   allowNull: false,
+    // },
   }, {
     tableName: 'roles',
     underscored: true,

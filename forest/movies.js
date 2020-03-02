@@ -1,15 +1,9 @@
 const { collection } = require('forest-express-sequelize');
 const sequelize = require('sequelize');
 
-const {Op} = sequelize;
-const models = require('../models');
+const { Op } = sequelize;
+// const models = require('../models');
 
-
-// This file allows you to add to your Forest UI:
-// - Smart actions: https://docs.forestadmin.com/documentation/reference-guide/actions/create-and-manage-smart-actions
-// - Smart fields: https://docs.forestadmin.com/documentation/reference-guide/fields/create-and-manage-smart-fields
-// - Smart relationships: https://docs.forestadmin.com/documentation/reference-guide/relationships/create-a-smart-relationship
-// - Smart segments: https://docs.forestadmin.com/documentation/reference-guide/segments/smart-segments
 collection('movies', {
   actions: [{
     name: 'send info',
@@ -36,7 +30,7 @@ collection('movies', {
       get(movie) {
         return movie
           .getRoles()
-          .then(roles => (roles.length > 0));
+          .then((roles) => (roles.length > 0));
       },
     },
     // {
@@ -44,12 +38,9 @@ collection('movies', {
     //   type: 'Number',
     //   // isSearchable: true,
     //   get(movie) {
-    //   // eslint-disable-next-line max-len
     //     return 12;
     //   },
     //   search(query, search) {
-    //     console.log("searching");
-    //     console.log(query.where[Op.and][0][Op.or])
     //     return query;
     //     query.include.push({
     //       model: models.roles,
@@ -101,9 +92,6 @@ collection('movies', {
 
 
     //     // query.where.push(searchCondition);
-    //     console.log(query.where);
-    //     console.log(query.where[Op.and][0][Op.or]);
-
     //     return query;
 
     //   // TRYING TO RETURN DIRECTLY A PROMISE

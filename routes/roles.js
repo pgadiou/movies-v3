@@ -1,5 +1,5 @@
 const express = require('express');
-const { PermissionMiddlewareCreator } = require('forest-express-sequelize');
+const { PermissionMiddlewareCreator, RecordCreator } = require('forest-express-sequelize');
 const { roles } = require('../models');
 
 const router = express.Router();
@@ -12,7 +12,13 @@ const permissionMiddlewareCreator = new PermissionMiddlewareCreator('roles');
 // Create a Role
 router.post('/roles', permissionMiddlewareCreator.create(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v5/reference-guide/routes/default-routes#create-a-record
-  next();
+  const recordCreator = new RecordCreator(roles);
+  recordCreator.deserialize(request.body)
+    .then((data) => recordCreator.create(data))
+    .then((record) => recordCreator.serialize(record))
+    .then((serializedData) => response.send(serializedData))
+    .catch(next);
+  // next();
 });
 
 // Update a Role
