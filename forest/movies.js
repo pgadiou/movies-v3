@@ -42,27 +42,25 @@ collection('movies', {
   fields: [
     {
       field: 'characteristics',
-      type:  'String',
+      type: 'String',
       get: (movie) => {
-        //check if the movie has a related characteristics record to return smtg or not
+        // check if the movie has a related characteristics record to return smtg or not
         if (movie.movieCharacteristic) {
           // list all your fields from the movieCharacteristics collection you want to display
           const characteristicsNameList = ['language', 'gore', 'drugs', 'graphicViolence', 'nudity'];
           // create empty string which will be filled with a div per field listed above - this string will be the value returned
           let characteristicsList = '';
           // add style that will be used to display the movie_characteristics info
-          const characteristicsDivStyle = 'margin: 24px 0px; color: #415574'
-          const characteristicsNameStyle = 'padding: 6px 16px; margin: 12px; background-color:#b5c8d05e; border-radius: 6px'
-          const characteristicsValueStyleRed = 'padding: 6px 12px; background-color:#ff7f7f87; border-radius: 6px'
-          const characteristicsValueStyleGreen = 'padding: 6px 12px; background-color:#7FFF7F; border-radius: 6px'
+          const characteristicsDivStyle = 'margin: 24px 0px; color: #415574';
+          const characteristicsNameStyle = 'padding: 6px 16px; margin: 12px; background-color:#b5c8d05e; border-radius: 6px';
+          const characteristicsValueStyleRed = 'padding: 6px 12px; background-color:#ff7f7f87; border-radius: 6px';
+          const characteristicsValueStyleGreen = 'padding: 6px 12px; background-color:#7FFF7F; border-radius: 6px';
           // iterate over the list of movie characteristics fields
           for (index = 0; index < characteristicsNameList.length; index++) {
             const fieldName = characteristicsNameList[index];
             // check if the value of the field is 0 or 1 to add the relevant style (default is 0)
             let characteristicsValueStyle = characteristicsValueStyleRed;
-            console.log(fieldName, movie.movieCharacteristic[fieldName])
             if (movie.movieCharacteristic[fieldName] === true) {
-              console.log('1 detected')
               characteristicsValueStyle = characteristicsValueStyleGreen;
             }
             // insert the div with the field info to the string that will be returned
@@ -73,8 +71,8 @@ collection('movies', {
           }
           return characteristicsList;
         }
-      }
-    },{
+      },
+    }, {
       field: 'Director name',
       type: 'String',
       get(movie) {
